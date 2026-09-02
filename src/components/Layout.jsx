@@ -1,4 +1,5 @@
-﻿import {
+﻿import { useState } from "react";
+import {
   LayoutDashboard,
   Users,
   ShieldCheck,
@@ -7,6 +8,8 @@
   Building2,
   Search,
   Bell,
+  Menu,
+  X,
 } from "lucide-react";
 
 const navigation = [
@@ -39,13 +42,20 @@ export default function Layout({
   onRoleChange,
   children,
 }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const visibleNavigation = navigation.filter(([name]) =>
     access[role].includes(name),
   );
 
+  const selectPage = (name) => {
+    setPage(name);
+    setProfile(role === "Trainee" && name === "Trainees");
+    setMobileMenuOpen(false);
+  };
+
   return (
     <div className="app">
-      <aside>
+      <aside className={mobileMenuOpen ? "mobile-open" : ""}>
         <div className="brand">
           <b>KAUSHAL SETU</b>
           <small>Skilling Outcomes Intelligence</small>
@@ -56,10 +66,7 @@ export default function Layout({
             <button
               key={name}
               className={page === name && !profile ? "active" : ""}
-              onClick={() => {
-                setPage(name);
-                setProfile(role === "Trainee" && name === "Trainees");
-              }}
+              onClick={() => selectPage(name)}
             >
               <Icon size={18} />
               {name}
@@ -74,8 +81,26 @@ export default function Layout({
         </div>
       </aside>
 
+      {mobileMenuOpen && (
+        <button
+          className="mobile-menu-backdrop"
+          aria-label="Close navigation menu"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
       <main>
         <header>
+          <button
+            className="mobile-menu-toggle"
+            aria-label={
+              mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"
+            }
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+
           <div className="search">
             <Search size={17} />
             <input placeholder="Search trainee records" />
